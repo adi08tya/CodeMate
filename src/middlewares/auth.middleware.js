@@ -7,7 +7,7 @@ const adminAuth = (req, res, next) => {
 
 const userAuth = (req,res,next) => {
     const token = "abc";
-    const isUserValid = token === "ac";
+    const isUserValid = token === "abc";
     if (!isUserValid) res.status(401).send("unauthorized request"); 
     else next();
 };  
