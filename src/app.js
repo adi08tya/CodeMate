@@ -38,6 +38,38 @@ app.get("/feed", async(req,res)=>{
   }
 })
 
+// delete a user by id
+app.delete("/user",async(req,res)=>{
+  const userId = req.body._id
+  try {
+    await User.findByIdAndDelete(userId);
+    res.send("User deleted successfully");
+  } catch (error) {
+    res.status(400).send("something went wrong");
+  }
+})
+
+// Update the data of the user 
+app.patch("/user",async(req,res)=>{
+    const  userId = req.body.userId;
+    const data =  req.body;
+    console.log(data);
+    
+    try {
+      await User.findByIdAndUpdate({_id:userId},data);
+      res.send("User updated successfully")
+    } catch (error) {
+       res.status(400).send("something went wrong");
+    }
+
+})
+
+
+
+
+
+
+
 connectDB()
   .then(() => {
     console.log("MongoDB connected successfully");
