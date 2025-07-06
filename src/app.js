@@ -1,6 +1,5 @@
 const express = require("express");
 const connectDB = require("./Config/database.js");
-const { adminAuth, userAuth } = require("./middlewares/auth.middleware.js");
 const app = express();
 app.use(express.json());
 const User = require("./models/user.js");
@@ -14,6 +13,30 @@ app.post("/signup", async (req, res) => {
     res.status(400).send("Error creating user: " + error.message);
   }
 });
+// get user by email
+app.get("/user",async(req,res)=>{
+  const userEmail = req.body.emailId;
+  try {
+    const user = await User.find({emailId:userEmail})
+    if (user.length === 0) {
+      return res.status(404).send("User not found");
+    }
+    else{
+      res.send(user);
+    }
+  } catch (error) {
+    res.status(500).send("Error fetching user: " + error.message);
+  }
+})
+// feed api - GET/feed - get all the users from the database
+app.get("/feed", async(req,res)=>{
+  try {
+    const users = await User.find({});
+    res.send(users);
+  } catch (error) {
+     res.status(400).send("something went wrong")
+  }
+})
 
 connectDB()
   .then(() => {
