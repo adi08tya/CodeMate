@@ -1,18 +1,56 @@
 const express = require("express");
 const connectDB = require("./Config/database.js");
+const validator = require("validator");
+const validateSignUpdata = require("./utils/validation.js");
+const bcrypt = require("bcrypt")
 const app = express();
 app.use(express.json());
 const User = require("./models/user.js");
 app.post("/signup", async (req, res) => {
-  // Dynamically create a new user based on the request body
-  const user = new User(req.body);
+ // Dynamically create a new user based on the request body
   try {
+    // validation of data
+    validateSignUpdata(req);
+
+    // encrypting the password 
+    const {password} =  req.body;
+    const hashPassword = await bcrypt.hash(password,10)
+    console.log(hashPassword);
+    
+    const user = new User({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      emailId: req.body.emailId,
+      password: hashPassword, 
+      age: req.body.age,
+      gender:req.body.gender,
+    });
     await user.save();
     res.send("User created succesfully");
   } catch (error) {
     res.status(400).send("Error creating user: " + error.message);
   }
 });
+
+app.post("/login",async(req,res)=>{
+  try {
+    const {emailId,password} = req.body;
+    if(!validator.isEmail(emailId)){
+      throw new Error("Enter a valid email Id")
+    } 
+    const user = await User.findOne({emailId: emailId})
+    if(!user) throw new Error("Invalid credentials");
+    const isPasswordValid = await bcrypt.compare(password,user.password)
+    if(!isPasswordValid){
+      throw new Error ("Invalid credentials");
+    }else{
+    res.status(200).send("User logged in successfully");
+    }
+  } catch (error) {
+    res.status(400).send("Error logging in: " + error.message);
+  }
+})
+
 // get user by email
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
@@ -27,6 +65,8 @@ app.get("/user", async (req, res) => {
     res.status(500).send("Error fetching user: " + error.message);
   }
 });
+
+
 // feed api - GET/feed - get all the users from the database
 app.get("/feed", async (req, res) => {
   try {
