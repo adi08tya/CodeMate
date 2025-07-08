@@ -1,2 +1,47 @@
-node_modules
+# Node modules
+node_modules/
+
+# dotenv environment variable files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific files
+.vscode/
+.idea/
+
+# Dependency lock files (optional, depending on your team setup)
+# package-lock.json
+# yarn.lock
+
+# Build / Coverage
+dist/
+build/
+coverage/
+
+# MongoDB dump or local database files (if any)
+dump/
+*.mongodb
+
+# Runtime data
+pids/
+*.pid
+*.seed
+
+# TypeScript (if using)
+*.tsbuildinfo
+
+# Others (if any specific to your project)
+uploads/
 

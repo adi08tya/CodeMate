@@ -3,9 +3,15 @@ const connectDB = require("./Config/database.js");
 const validator = require("validator");
 const validateSignUpdata = require("./utils/validation.js");
 const bcrypt = require("bcrypt")
+const cookieparser = require("cookie-parser")
+const jwt = require("jsonwebtoken");
+const User = require("./models/user.js");
+const { userAuth } = require("./middlewares/auth.js");
+require("dotenv").config();
 const app = express();
 app.use(express.json());
-const User = require("./models/user.js");
+app.use(cookieparser());
+
 app.post("/signup", async (req, res) => {
  // Dynamically create a new user based on the request body
   try {
@@ -40,16 +46,40 @@ app.post("/login",async(req,res)=>{
     } 
     const user = await User.findOne({emailId: emailId})
     if(!user) throw new Error("Invalid credentials");
-    const isPasswordValid = await bcrypt.compare(password,user.password)
-    if(!isPasswordValid){
-      throw new Error ("Invalid credentials");
+    // const isPasswordValid = await bcrypt.compare(password,user.password)
+    const isPasswordValid = await user.validatePassword(password);
+    if(isPasswordValid){
+      // Generate a JWT token
+      // const token = await jwt.sign({_id:user._id}, process.env.jwtprivatekey , {expiresIn: "1d"});
+      const token = await user.getJWT();
+      res.cookie("token",token);
+      res.status(200).send("User logged in successfully");
     }else{
-    res.status(200).send("User logged in successfully");
+    throw new Error("Invalid credentials");
     }
   } catch (error) {
     res.status(400).send("Error logging in: " + error.message);
   }
 })
+
+
+app.get("/profile",userAuth,async(req,res)=>{
+   try {
+    const user = req.user;
+    res.send(user);
+   } catch (error) {
+    res.status(400).send("Error in profile Api: " + error.message);
+   }
+})
+
+app.post("/sendrequest", userAuth, async (req, res) => {
+  try {
+    console.log("Inside sendConnectionRequest API");
+    res.send("Connection request sent successfully by " + req.user.firstName + " " + req.user.lastName);
+  } catch (error) {
+    res.status(400).send("Error sending connection request: " + error.message);
+  }
+});
 
 // get user by email
 app.get("/user", async (req, res) => {
