@@ -4,7 +4,6 @@ const validateSignUpdata = require("../utils/validation");
 const authRouter = express.Router();
 const bcrypt = require("bcrypt");
 const validator = require("validator");
-const jwt = require("jsonwebtoken");
 
 authRouter.post("/signup", async (req, res) => {
   // Dynamically create a new user based on the request body
