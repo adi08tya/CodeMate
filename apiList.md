@@ -12,7 +12,7 @@ patch /profile/password
 
 status: ignore , interested, accepted , rejected
 ##connectionRequestRouter
-post /request/send/interest/:userId
+post /request/send/interested/:userId
 post /request/send/ignored/:userId
 post /request/review/accepted/:requestId
 post /request/review/rejected/:requestId

@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     emailId: {
       type: String,
       required: true,
-      unique: true,
+      unique: true,   //unique: true then mongoDB will create index autmatically on this query
       lowercase: true,
       trim: true,
       validate(value){
@@ -38,11 +38,13 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      validate(value){
-        if(!['Male','Female','Other'].includes(value)){
-            throw new Error("Gender data is not valid");
+      // validate(value){
+      //   if(!['Male','Female','Other'].includes(value)) throw new Error("Gender data is not valid");
+      // }
+      enum:{
+        values:['Male','Female','Other'],
+        message:`{VALUE} is not a valid status`
       }
-    }
     },
     photoUrl:{
         type: String
@@ -57,6 +59,9 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// userSchema.index({firstName:1,lastName:1});
+
 
 userSchema.methods.getJWT = async function(){
     const token = await jwt.sign({_id:this._id},process.env.jwtprivatekey, {expiresIn: "1d"});
