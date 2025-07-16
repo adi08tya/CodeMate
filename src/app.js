@@ -1,15 +1,16 @@
 const express = require("express");
 const connectDB = require("./Config/database.js");
 const cookieparser = require("cookie-parser");
-const cors = require("cors")
+const cors = require("cors");
 require("dotenv").config();
 const app = express();
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials:true
-  })
-);
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); 
 app.use(express.json());
 app.use(cookieparser());
 
@@ -18,12 +19,10 @@ const requestRouter = require("./routes/request.router.js");
 const profileRouter = require("./routes/profile.router.js");
 const userRouter = require("./routes/user.router.js");
 
-app.use("/auth",authRouter);
-app.use("/request",requestRouter);
-app.use("/profile",profileRouter);
-app.use("/user",userRouter);
-
-
+app.use("/auth", authRouter);
+app.use("/request", requestRouter);
+app.use("/profile", profileRouter);
+app.use("/user", userRouter);
 
 connectDB()
   .then(() => {

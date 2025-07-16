@@ -14,6 +14,7 @@ profileRouter.get("/view", userAuth, async (req, res) => {
 profileRouter.patch("/edit", userAuth, async (req, res) => {
   try {
     if (!validateEditProfile(req)) {
+       console.log("Validation failed for request body:", req.body);
       throw new Error("Invalid edit request");
     }
     const loggedInUser = req.user;
